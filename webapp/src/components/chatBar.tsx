@@ -1,18 +1,59 @@
+interface item {
+    name:string;
+    lastMessage:lastMessage;
+    unreadMessages:number;
+}
+
+interface lastMessage{
+    sender:string;
+    messageContent:string;
+    messageTimestamp:Date;
+}
+
 interface status {
     number:number
 }
 
-export default function ChatBar() {
+export function ChatBar({name, lastMessage, unreadMessages}:item) {
+
+    const stripTime = (date:Date) => {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    }
+    const stripYear = (date:Date) => {
+        return new Date(date.getFullYear())
+    }
+
+
+    const lastMessageTimestamp = lastMessage.messageTimestamp
+    const now = new Date()
+
+    const pad = (n: number) => (n < 10 ? `0${n}` : n);
+
+    let finalTimestamp = ""
+
+    // same day
+    if(stripTime(now).valueOf()===stripTime(lastMessageTimestamp).valueOf()) 
+        finalTimestamp = `${lastMessageTimestamp.getHours() <= 9 ?"0":""}${lastMessageTimestamp.getHours()}:${lastMessageTimestamp.getMinutes() <= 9 ?"0":""}${lastMessageTimestamp.getMinutes()}`
+    // same year
+    else if(stripYear(stripTime(now)).valueOf()===stripYear(stripTime(lastMessageTimestamp)).valueOf()) 
+        finalTimestamp = `${pad(lastMessageTimestamp.getDate())}.${pad(lastMessageTimestamp.getMonth()+1)}`
+    // else
+    else 
+        finalTimestamp = `${pad(lastMessageTimestamp.getDate())}.${pad(lastMessageTimestamp.getMonth()+1)}.${lastMessageTimestamp.getFullYear()}`
+
+    console.log(stripTime(now).valueOf()==stripTime(lastMessageTimestamp).valueOf())
+
+
   return (
     <div className="rounded-xl bg-neutral-700 w-auto h-20 p-4">
 <div className="flex flex-row justify-between">
 
-        <h2 className="text-2xl font-bold text-white">Group chat</h2>
-        <div className=""><StatusBadge number={1}/></div>
+        <h2 className="text-2xl font-bold text-white">{name}</h2>
+        <div className=""><StatusBadge number={unreadMessages}/></div>
 </div>
         <span className="flex flex-row justify-between">
-            <p className="text-[12px] text-white font-medium truncate mr-4">you: fdsfsd dsf ds fsd fsd </p>
-            <p className="text-[12px] text-white font-medium">17:00</p>
+            <p className="text-[12px] text-white font-medium truncate mr-4">{lastMessage.sender}: {lastMessage.messageContent}</p>
+            <p className="text-[12px] text-white font-medium">{finalTimestamp}</p>
         </span>
       
     </div>
@@ -22,8 +63,8 @@ export default function ChatBar() {
 
 function StatusBadge({number}:status){
     return(
-        <div className={`h-6 w-6 rounded-[100px] ${number!==0?"bg-yellow-400":"hidden"} flex justify-center items-center`}>
-            {number!==0?<p className="text-white font-bold text-xl">3</p>:null}
+        <div className={`h-6 min-w-6 rounded-[100px] ${number!==0?"bg-yellow-400":"hidden"} flex justify-center items-center`}>
+            {number!==0?<p className="text-white font-bold text-[14px]">{number>9?'9+':number}</p>:null}
         </div>
     )
 }
