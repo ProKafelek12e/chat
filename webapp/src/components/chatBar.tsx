@@ -41,7 +41,6 @@ export function ChatBar({name, lastMessage, unreadMessages}:item) {
     else 
         finalTimestamp = `${pad(lastMessageTimestamp.getDate())}.${pad(lastMessageTimestamp.getMonth()+1)}.${lastMessageTimestamp.getFullYear()}`
 
-    console.log(stripTime(now).valueOf()==stripTime(lastMessageTimestamp).valueOf())
 
 
   return (

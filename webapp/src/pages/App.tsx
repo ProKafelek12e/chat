@@ -1,8 +1,25 @@
+import { useNavigate } from "react-router"
 import NavBar from "../components/navBar"
 import SideBar from "../components/sideBar"
+import { useState } from "react"
 
 function App() {
+  let navigate = useNavigate()
 
+  const [logged,setLogged] = useState<Boolean>(false)
+
+  const checkAuth = async() => {
+    const res = await fetch('http://localhost:7000/api/token',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:localStorage.getItem('token')})
+    })
+    if(res.status===200) setLogged(true)
+    else navigate('/login')
+    
+  }
+  checkAuth()
+  if(logged===true){
   return (
     <>
     <div className='bg-neutral-800 h-screen w-full grid grid-cols-[2fr_9fr] grid-rows-[10vh_90vh]'>
@@ -27,6 +44,14 @@ function App() {
     </div>
     </>
   )
+}
+else{
+  return (
+    <div className="w-full h-screen flex justify-center items-center">
+    <h1 className="w-20">Loading...</h1>
+    </div>
+  )
+}
 }
 
 export default App
